@@ -853,6 +853,7 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
         boolean rotatedUsingRenderscript;
         try {
             bitmap = rotateUsingRenderscript(bitmap, rotate);
+            exif.resetOrientation();
             rotatedUsingRenderscript = true;
         } catch (RSRuntimeException e) {
             Log.d(LOG_TAG, "Unable to rotate using Renderscript: " + e.getMessage());
