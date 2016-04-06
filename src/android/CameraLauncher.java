@@ -56,6 +56,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.renderscript.RSRuntimeException;
 import android.util.Base64;
 import android.util.Log;
 import android.content.pm.PackageManager;
@@ -848,6 +849,19 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
      * @return rotated bitmap
      */
     private Bitmap getRotatedBitmap(int rotate, Bitmap bitmap, ExifHelper exif) {
+        Log.d(LOG_TAG, "Rotating bitmap with : " + rotate + " degrees");
+        boolean rotatedUsingRenderscript;
+        try {
+            bitmap = rotateUsingRenderscript(bitmap, rotate);
+            rotatedUsingRenderscript = true;
+        } catch (RSRuntimeException e) {
+            Log.d(LOG_TAG, "Unable to rotate using Renderscript: " + e.getMessage());
+            rotatedUsingRenderscript = false;
+        }
+        if (rotatedUsingRenderscript) {
+            return bitmap;
+        }
+
         Matrix matrix = new Matrix();
         if (rotate == 180) {
             matrix.setRotate(rotate);
@@ -868,6 +882,29 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
             // If you do not catch the OutOfMemoryError, the Android app crashes.
         }
 
+        return bitmap;
+    }
+
+    /**
+     * Rotate the bitmap using RenderScript
+     *
+     * @param bitmap bitmap to rotate
+     * @param rotate degrees to rotate (0, 90, 180 or 270)
+     * @return rotated bitmap
+     * @throws RSRuntimeException thrown when RenderScript fails.
+     */
+    private Bitmap rotateUsingRenderscript(Bitmap bitmap, int rotate) throws RSRuntimeException {
+        if (rotate == 90 || rotate == 270) {
+            Log.d(LOG_TAG, "Rotating using RenderScript: " + rotate);
+            Rotator rotator = new Rotator(this.cordova.getActivity().getApplicationContext());
+            bitmap = rotator.rotate(bitmap, rotate);
+        } else if (rotate == 180) {
+            rotate = 90;
+            Log.d(LOG_TAG, "Rotating twice using RenderScript: " + rotate);
+            Rotator rotator = new Rotator(this.cordova.getActivity().getApplicationContext());
+            bitmap = rotator.rotate(bitmap, 90);
+            bitmap = rotator.rotate(bitmap, 90);
+        }
         return bitmap;
     }
 

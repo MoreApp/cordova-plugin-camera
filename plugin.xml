@@ -70,9 +70,13 @@
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
 
+        <framework src="src/android/camera.gradle" custom="true" type="gradleReference"/>
+
         <source-file src="src/android/CameraLauncher.java" target-dir="src/org/apache/cordova/camera" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/camera" />
         <source-file src="src/android/ExifHelper.java" target-dir="src/org/apache/cordova/camera" />
+        <source-file src="src/android/Rotator.java" target-dir="src/org/apache/cordova/camera" />
+        <source-file src="src/android/rotator.rs" target-dir="src/rs" />
 
         <js-module src="www/CameraPopoverHandle.js" name="CameraPopoverHandle">
             <clobbers target="CameraPopoverHandle" />

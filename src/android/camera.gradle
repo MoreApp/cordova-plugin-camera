@@ -1,0 +1,6 @@
+android {
+    defaultConfig {
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
+    }
+}
