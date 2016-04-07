@@ -515,7 +515,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         else if (destType == FILE_URI || destType == NATIVE_URI) {
             // If all this is true we shouldn't compress the image.
             if (this.targetHeight == -1 && this.targetWidth == -1 && this.mQuality == 100 &&
-                    !this.correctOrientation) {
+                    (!this.correctOrientation || rotate == 0)) {
 
                 // If we saved the uncompressed photo to the album, we can just
                 // return the URI we already created
@@ -850,19 +850,15 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
      */
     private Bitmap getRotatedBitmap(int rotate, Bitmap bitmap, ExifHelper exif) {
         Log.d(LOG_TAG, "Rotating bitmap with : " + rotate + " degrees");
-        boolean rotatedUsingRenderscript;
         try {
             bitmap = rotateUsingRenderscript(bitmap, rotate);
             exif.resetOrientation();
-            rotatedUsingRenderscript = true;
+            return bitmap;
         } catch (RSRuntimeException e) {
             Log.d(LOG_TAG, "Unable to rotate using Renderscript: " + e.getMessage());
-            rotatedUsingRenderscript = false;
-        }
-        if (rotatedUsingRenderscript) {
-            return bitmap;
         }
 
+        // Fallback to rotate using a Matrix, might the RenderScript fail
         Matrix matrix = new Matrix();
         if (rotate == 180) {
             matrix.setRotate(rotate);
