@@ -25,17 +25,23 @@ public class Rotator {
         bitmap.recycle();
         script.set_inImage(sourceAllocation);
 
-        int targetHeight = bitmap.getWidth();
-        int targetWidth = bitmap.getHeight();
+        int targetHeight = bitmap.getHeight();
+        int targetWidth = bitmap.getWidth();
+        if (rotate == 90 || rotate == 270) {
+            targetHeight = bitmap.getWidth();
+            targetWidth = bitmap.getHeight();
+        }
         Bitmap.Config config = bitmap.getConfig();
         Bitmap target = Bitmap.createBitmap(targetWidth, targetHeight, config);
         final Allocation targetAllocation = Allocation.createFromBitmap(rs, target,
                 Allocation.MipmapControl.MIPMAP_NONE,
                 Allocation.USAGE_SCRIPT);
         if (rotate == 90) {
-            script.forEach_rotate_270_clockwise(targetAllocation, targetAllocation);
+            script.forEach_rotate_90_counterclockwise(targetAllocation, targetAllocation);
+        } else if (rotate == 180) {
+            script.forEach_rotate_180(targetAllocation, targetAllocation);
         } else if (rotate == 270) {
-            script.forEach_rotate_90_clockwise(targetAllocation, targetAllocation);
+            script.forEach_rotate_270_counterclockwise(targetAllocation, targetAllocation);
         }
 
         targetAllocation.copyTo(target);

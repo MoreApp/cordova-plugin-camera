@@ -895,16 +895,10 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
      * @throws RSRuntimeException thrown when RenderScript fails.
      */
     private Bitmap rotateUsingRenderscript(Bitmap bitmap, int rotate) throws RSRuntimeException {
-        if (rotate == 90 || rotate == 270) {
+        if (rotate == 90 || rotate == 180 || rotate == 270) {
             Log.d(LOG_TAG, "Rotating using RenderScript: " + rotate);
             Rotator rotator = new Rotator(this.cordova.getActivity().getApplicationContext());
             bitmap = rotator.rotate(bitmap, rotate);
-        } else if (rotate == 180) {
-            rotate = 90;
-            Log.d(LOG_TAG, "Rotating twice using RenderScript: " + rotate);
-            Rotator rotator = new Rotator(this.cordova.getActivity().getApplicationContext());
-            bitmap = rotator.rotate(bitmap, 90);
-            bitmap = rotator.rotate(bitmap, 90);
         }
         return bitmap;
     }
